@@ -109,6 +109,25 @@ app.get('/getMaxUserId', async (req, res) => {
     }
 });
 
+//Consulta del ID de un usuario
+app.get('/getUserID/:username', async (req, res) => {
+    const username = req.params.username;
+
+    try {
+        const [result] = await pool.query('SELECT ID FROM usuarios WHERE usuario = ?', [username]);
+
+        if (result.length > 0) {
+            const userID = result[0].ID;
+            res.json({ userID });
+        } else {
+            res.json({ userID: null, message: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al obtener el ID de usuario:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
 
 //Reseteo del autoincremental
 app.get('/resetAutoIncrement', async (req, res) => {
