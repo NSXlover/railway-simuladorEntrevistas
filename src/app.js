@@ -59,6 +59,18 @@ app.get('/selectAllUsers', async (req, res) => {
     }
 });
 
+//Consulta del ID más alto
+app.get('/getMaxUserId', async (req, res) => {
+    try {
+        const [result] = await pool.query('SELECT MAX(ID) as maxUserId FROM usuarios');
+        res.json(result[0]);
+        
+    } catch (error) {
+        console.error('Error al obtener el ID máximo de usuarios:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
 //Añadimos preguntas para cada usuario que pasamos por parámetro
 app.get('/addQuestion/:question', async (req, res) =>{
     const question = req.params.question; //extraemos el parámetro de la ruta anterior
