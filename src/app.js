@@ -8,7 +8,7 @@ import { PORT } from './config.js';
 import bcrypt from 'bcrypt';
 
 const app = express();
-const bcrypt = require('bcrypt');
+app.use(express.json());
 
 app.get('/', (req, res) =>{
     res.send("Realice un ping para comprobar si existe una conexión");
