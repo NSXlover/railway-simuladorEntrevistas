@@ -71,6 +71,23 @@ app.get('/getMaxUserId', async (req, res) => {
     }
 });
 
+//Reseteo del autoincremental
+app.get('/resetAutoIncrement', async (req, res) => {
+    try {
+        // Resetear AUTO_INCREMENT a 1
+        await pool.query('ALTER TABLE usuarios AUTO_INCREMENT = 1');
+
+        // Consulta para obtener el nuevo valor de incremento automático
+        const [result] = await pool.query('SELECT AUTO_INCREMENT as newAutoIncrementValue FROM information_schema.tables WHERE table_name = "usuarios" AND table_schema = DATABASE()');
+
+        res.json(result[0]);
+    } catch (error) {
+        console.error('Error al resetear el AUTO_INCREMENT:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
 //Añadimos preguntas para cada usuario que pasamos por parámetro
 app.get('/addQuestion/:question', async (req, res) =>{
     const question = req.params.question; //extraemos el parámetro de la ruta anterior
