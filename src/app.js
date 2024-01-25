@@ -12,11 +12,11 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-  origin: '*', // Permite solicitudes solo desde este origen
-  methods: ['GET', 'POST'], // Métodos HTTP permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-  credentials: true, // Permite el envío de cookies
-  maxAge: 3600, // Tiempo máximo de vida de las solicitudes preflight (en segundos)
+    origin: '*', // Permite solicitudes solo desde este origen
+    methods: ['GET', 'POST'], // Métodos HTTP permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    credentials: true, // Permite el envío de cookies
+    maxAge: 3600, // Tiempo máximo de vida de las solicitudes preflight (en segundos)
 };
 
 app.use(cors(corsOptions));
@@ -107,13 +107,16 @@ app.get('/login', async (req, res) => {
 
             if (contrasenaCorrecta) {
                 // Contraseña correcta, usuario autenticado
+                alert('Inicio de sesión exitoso');
                 res.json({ authenticated: true, message: 'Inicio de sesión exitoso' });
             } else {
                 // Contraseña incorrecta
+                alert('Contraseña incorrecta');
                 res.json({ authenticated: false, message: 'Contraseña incorrecta' });
             }
         } else {
             // Usuario no encontrado
+            alert('Usuario no encontrado');
             res.json({ authenticated: false, message: 'Usuario no encontrado' });
         }
 
