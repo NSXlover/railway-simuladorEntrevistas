@@ -10,15 +10,16 @@ import bcrypt from 'bcrypt';
 
 const app = express();
 app.use(express.json());
-app.use(cors());
-//Permitimos la conexión desde el frontend
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
+
+const corsOptions = {
+  origin: 'https://manologarcia.dev', // Permite solicitudes solo desde este origen
+  methods: ['GET', 'POST'], // Métodos HTTP permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+  credentials: true, // Permite el envío de cookies
+  maxAge: 3600, // Tiempo máximo de vida de las solicitudes preflight (en segundos)
+};
+
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
     res.send("Realice un ping para comprobar si existe una conexión");
