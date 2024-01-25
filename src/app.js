@@ -5,13 +5,13 @@ import express from 'express';
 import crypto from 'crypto';
 import { pool } from './db.js';
 import { PORT } from './config.js';
-import cors from 'cors';  
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
-app.use(cors()); 
+app.use(cors());
 
-app.get('/', (req, res) =>{
+app.get('/', (req, res) => {
     res.send("Realice un ping para comprobar si existe una conexión");
 });
 
@@ -31,7 +31,12 @@ app.get('/ping', async (req, res) => {
 
 //Sentencia de creación de usuarios con contraseñas cifradas
 app.post('/createUser', async (req, res) => { //Ruta y método HTTP
-    const { usuario, contrasena } = req.body; //Se extraen los datos de la solicitud en las variables respectivamente
+
+    //Se extraen los datos de la solicitud en las variables respectivamente
+    const usuario = req.body.usuario;
+    const contrasena = req.body.contrasena;
+
+    console.log(usuario + " || " + contrasena);
 
     // Generar un salt aleatorio
     const salt = crypto.randomBytes(16).toString('hex'); //Esto sirve para añadirle una cadena aleatoria antes de aplicar el hash y así mejorar la seguridad
@@ -82,7 +87,7 @@ app.post('/login', async (req, res) => {
         if (result.length > 0) {
             // Si se encuentra el usuario, comparar contraseñas
             const hashedContrasenaDB = result[0].contrasena;
-            
+
             // Comparar la contraseña proporcionada con la almacenada en la base de datos
             const contrasenaCorrecta = await bcrypt.compare(contrasena, hashedContrasenaDB);
 
@@ -110,7 +115,7 @@ app.get('/getMaxUserId', async (req, res) => {
     try {
         const [result] = await pool.query('SELECT MAX(ID) as maxUserId FROM usuarios');
         res.json(result[0]);
-        
+
     } catch (error) {
         console.error('Error al obtener el ID máximo de usuarios:', error);
         res.status(500).send('Error interno del servidor');
@@ -155,10 +160,10 @@ app.get('/resetAutoIncrement', async (req, res) => {
 
 
 //Añadimos preguntas para cada usuario que pasamos por parámetro
-app.get('/addQuestion/:userID/:question', async (req, res) =>{
+app.get('/addQuestion/:userID/:question', async (req, res) => {
     const userID = req.params.userID;
     const question = req.params.question;
-    
+
     try {
         const result = await pool.query('INSERT INTO preguntas (IDusuario, preguntas) VALUES (?, ?)', [userID, question]);
         res.json(result);
