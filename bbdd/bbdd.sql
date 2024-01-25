@@ -1,7 +1,8 @@
 -- SCRIPTS PARA LA CREACIÓN DE LAS TABLAS
 CREATE TABLE usuarios (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(255)
+    usuario VARCHAR(255),
+    contrasena VARCHAR(255)
 );
 
 

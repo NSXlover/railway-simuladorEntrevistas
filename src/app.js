@@ -8,28 +8,77 @@ import {PORT} from './config.js';
 const app = express();
 
 app.get('/', (req, res) =>{
-    res.send("Welcome");
-}) 
+    res.send("Realice un ping para comprobar si existe una conexión");
+});
 
+//Solicitud para comprobar la conexión
 app.get('/ping', async (req, res) =>{
     const [result] =  await pool.query('SELECT "Conexión satisfactoria" AS RESULT');
     console.log(result[0]);
     res.json(result[0]);
-})
+});
 
-app.get('/createUsers', async (req, res) =>{
-    const result =  await pool.query('INSERT INTO usuarios(usuario) VALUES ("usuario")');
-    res.json(result);
-})
+//Sentencia de creación de usuarios con contraseñas cifradas
+app.post('/createUser', async (req, res) => { //Ruta y método HTTP
+    const { usuario, contrasena } = req.body; //Se extraen los datos de la solicitud en las variables respectivamente
 
-app.get('/selectAllUsers', async (req, res) =>{
-    const [result] =  await pool.query('SELECT * FROM usuarios as USUARIOS');
-    res.json(result);
-})
+    // Generar un salt aleatorio
+    const salt = crypto.randomBytes(16).toString('hex'); //Esto sirve para añadirle una cadena aleatoria antes de aplicar el hash y así mejorar la seguridad
 
-app.get('/create', async (req, res) =>{
-    await pool.query()
-}) 
+    // Aplicar hash a la contraseña junto con el salt aplicando el sha256
+    const hashedContrasena = crypto
+        .createHash('sha256')
+        .update(contrasena + salt)
+        .digest('hex');
+
+    try {
+        // Insertar el nuevo usuario con el nombre de usuario, contraseña y salt
+        const result = await pool.query(
+            'INSERT INTO usuarios(usuario, contrasena) VALUES (?, ?)',
+            [usuario, hashedContrasena]
+        );
+
+        res.json(result); //Envío de la respuesta al cliente
+
+    } catch (error) { //Manejo de errores
+        console.error('Error al crear el usuario:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
+//Consulta de todos los ususarios
+app.get('/selectAllUsers', async (req, res) => {
+    try {
+        const [result] = await pool.query('SELECT usuario FROM usuarios'); //seleccionamos los usuarios
+        res.json(result); //Devolvemos el resultado
+
+    } catch (error) { //Manejo de errores
+        console.error('Error al seleccionar todos los usuarios:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+//Añadimos preguntas para cada usuario que pasamos por parámetro
+app.get('/addQuestion/:question', async (req, res) =>{
+    const question = req.params.question; //extraemos el parámetro de la ruta anterior
+    const result = await pool.query('INSERT INTO preguntas(question) VALUES (?)', [nombreUsuario]); //consulta SQL
+    res.json(result); //Reenvío de la respuesta al cliente
+});
+
+//Consultamos las preguntas para cada usuario
+app.get('/getQuestions/:usuario', async (req, res) => {
+    const usuario = req.params.usuario; // Extraemos el parámetro de la ruta
+
+    try {
+        const [result] = await pool.query('SELECT question FROM preguntas WHERE usuario = ?', [usuario]);
+        res.json(result);
+
+    } catch (error) {
+        console.error('Error al obtener las preguntas del usuario:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
 
 app.listen(PORT);
 console.log('Conexión con la bbdd exitosa');
