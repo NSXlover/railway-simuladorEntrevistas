@@ -87,6 +87,8 @@ app.post('/login', async (req, res) => {
         // Buscar el usuario por nombre de usuario
         const [result] = await pool.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
 
+        console.log(result);
+
         if (result.length > 0) {
             // Si se encuentra el usuario, comparar contraseñas
             const hashedContrasenaDB = result[0].contrasena;
