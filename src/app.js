@@ -79,7 +79,9 @@ app.get('/selectAllUsers', async (req, res) => {
 
 //Login
 app.post('/login', async (req, res) => {
-    const { usuario, contrasena } = req.body;
+    //Se extraen los datos de la solicitud en las variables respectivamente
+    const usuario = req.body.usuario;
+    const contrasena = req.body.contrasena;
 
     try {
         // Buscar el usuario por nombre de usuario
