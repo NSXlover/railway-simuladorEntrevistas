@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { pool } from './db.js';
 import { PORT } from './config.js';
 import cors from 'cors';
+import bcrypt from 'bcrypt';
 
 const app = express();
 app.use(express.json());
