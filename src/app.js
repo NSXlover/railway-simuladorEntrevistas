@@ -109,7 +109,8 @@ app.post('/login', async (req, res) => {
         }
 
     } catch (error) {
-        console.error('Error en la ruta /login:', error);
+        console.error('Error al realizar la solicitud:', error);
+        alert('Error al realizar la solicitud: ' + error.message);
 
         if (error.code === 'ER_ACCESS_DENIED_ERROR') {
             // Error de acceso a la base de datos, verifica las credenciales de la base de datos
