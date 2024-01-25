@@ -2,8 +2,10 @@
 
 //Importar paquete necesario
 import express from 'express';
-import {pool} from  './db.js';
-import {PORT} from './config.js';
+import crypto from 'crypto';
+import { pool } from './db.js';
+import { PORT } from './config.js';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const bcrypt = require('bcrypt');
@@ -14,10 +16,15 @@ app.get('/', (req, res) =>{
 
 
 //Solicitud para comprobar la conexión
-app.get('/ping', async (req, res) =>{
-    const [result] =  await pool.query('SELECT "Conexión satisfactoria" AS RESULT');
-    console.log(result[0]);
-    res.json(result[0]);
+app.get('/ping', async (req, res) => {
+    try {
+        const [result] = await pool.query('SELECT "Conexión satisfactoria" AS RESULT');
+        console.log(result[0]);
+        res.json(result[0]);
+    } catch (error) {
+        console.error('Error al realizar el ping:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
 
 
