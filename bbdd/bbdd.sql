@@ -1,13 +1,12 @@
--- SCRIPTS PARA LA CREACIÓN DE LAS TABLAS
+/* SCRIPTS PARA LA CREACIÓN DE LAS TABLAS
 CREATE TABLE usuarios (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(255),
-    contrasena VARCHAR(255)
+    usuario VARCHAR(255)
 );
 
 
 CREATE TABLE preguntas (
-    IDusuario INT AUTO_INCREMENT PRIMARY KEY,
+    IDusuario INT,
     preguntas TEXT,
     FOREIGN KEY (IDusuario) REFERENCES usuarios(ID)
 );
@@ -17,8 +16,4 @@ CREATE TABLE videos (
     IDusuario INT,
     CONSTRAINT fk_usuario FOREIGN KEY (IDusuario) REFERENCES usuarios(ID)
 );
-
-
-select * from usuarios;
-select * from preguntas;
-select * from videos;
+*/

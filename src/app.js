@@ -128,10 +128,17 @@ app.get('/resetAutoIncrement', async (req, res) => {
 
 
 //Añadimos preguntas para cada usuario que pasamos por parámetro
-app.get('/addQuestion/:question', async (req, res) =>{
-    const question = req.params.question; //extraemos el parámetro de la ruta anterior
-    const result = await pool.query('INSERT INTO preguntas(question) VALUES (?)', [nombreUsuario]); //consulta SQL
-    res.json(result); //Reenvío de la respuesta al cliente
+app.get('/addQuestion/:userID/:question', async (req, res) =>{
+    const userID = req.params.userID;
+    const question = req.params.question;
+    
+    try {
+        const result = await pool.query('INSERT INTO preguntas (IDusuario, preguntas) VALUES (?, ?)', [userID, question]);
+        res.json(result);
+    } catch (error) {
+        console.error('Error al añadir pregunta:', error);
+        res.status(500).send('Error interno del servidor');
+    }
 });
 
 
