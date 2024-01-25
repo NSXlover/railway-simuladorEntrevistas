@@ -6,10 +6,12 @@ import {pool} from  './db.js';
 import {PORT} from './config.js';
 
 const app = express();
+const bcrypt = require('bcrypt');
 
 app.get('/', (req, res) =>{
     res.send("Realice un ping para comprobar si existe una conexión");
 });
+
 
 //Solicitud para comprobar la conexión
 app.get('/ping', async (req, res) =>{
@@ -17,6 +19,7 @@ app.get('/ping', async (req, res) =>{
     console.log(result[0]);
     res.json(result[0]);
 });
+
 
 //Sentencia de creación de usuarios con contraseñas cifradas
 app.post('/createUser', async (req, res) => { //Ruta y método HTTP
@@ -59,6 +62,41 @@ app.get('/selectAllUsers', async (req, res) => {
     }
 });
 
+
+//Login
+app.post('/login', async (req, res) => {
+    const { usuario, contrasena } = req.body;
+
+    try {
+        // Buscar el usuario por nombre de usuario
+        const [result] = await pool.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
+
+        if (result.length > 0) {
+            // Si se encuentra el usuario, comparar contraseñas
+            const hashedContrasenaDB = result[0].contrasena;
+            
+            // Comparar la contraseña proporcionada con la almacenada en la base de datos
+            const contrasenaCorrecta = await bcrypt.compare(contrasena, hashedContrasenaDB);
+
+            if (contrasenaCorrecta) {
+                // Contraseña correcta, usuario autenticado
+                res.json({ authenticated: true, message: 'Inicio de sesión exitoso' });
+            } else {
+                // Contraseña incorrecta
+                res.json({ authenticated: false, message: 'Contraseña incorrecta' });
+            }
+        } else {
+            // Usuario no encontrado
+            res.json({ authenticated: false, message: 'Usuario no encontrado' });
+        }
+
+    } catch (error) {
+        console.error('Error al realizar el inicio de sesión:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
 //Consulta del ID más alto
 app.get('/getMaxUserId', async (req, res) => {
     try {
@@ -70,6 +108,7 @@ app.get('/getMaxUserId', async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
+
 
 //Reseteo del autoincremental
 app.get('/resetAutoIncrement', async (req, res) => {
@@ -95,6 +134,7 @@ app.get('/addQuestion/:question', async (req, res) =>{
     res.json(result); //Reenvío de la respuesta al cliente
 });
 
+
 //Consultamos las preguntas para cada usuario
 app.get('/getQuestions/:usuario', async (req, res) => {
     const usuario = req.params.usuario; // Extraemos el parámetro de la ruta
@@ -108,6 +148,7 @@ app.get('/getQuestions/:usuario', async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
+
 
 app.listen(PORT);
 console.log('Conexión con la bbdd exitosa');

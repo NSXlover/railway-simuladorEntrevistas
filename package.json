@@ -5,13 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon js/app.js" ,
+    "dev": "nodemon js/app.js",
     "start": "node src/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.18.2",
     "mysql2": "^3.8.0"
   },
