@@ -87,7 +87,7 @@ app.get('/selectAllUsers', async (req, res) => {
 
 
 //Login
-app.post('/login', async (req, res) => {
+app.get('/login', async (req, res) => {
     //Se extraen los datos de la solicitud en las variables respectivamente
     const usuario = req.body.usuario;
     const contrasena = req.body.contrasena;
