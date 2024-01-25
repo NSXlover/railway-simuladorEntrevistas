@@ -180,7 +180,7 @@ app.get('/resetAutoIncrement', async (req, res) => {
 
 
 //Añadimos preguntas para cada usuario que pasamos por parámetro
-app.get('/addQuestion/:userID/:question', async (req, res) => {
+app.post('/addQuestion/:userID/:question', async (req, res) => {
     const userID = req.params.userID;
     const question = req.params.question;
 
