@@ -43,29 +43,24 @@ app.get('/ping', async (req, res) => {
 app.post('/createUser', async (req, res) => {
     // Se extraen los datos de la solicitud en las variables respectivamente
     const usuario = req.body.usuario;
-    const contrasena = req.body.pass; // Cambiado a 'pass'
+    const contrasena = req.body.contrasena;
 
     // Generar un salt aleatorio
-    const salt = crypto.randomBytes(16).toString('hex');
-
-    // Aplicar hash a la contraseña junto con el salt aplicando el sha256
-    const hashedContrasena = crypto
-        .createHash('sha256')
-        .update(contrasena + salt)
-        .digest('hex');
+    const saltRounds = 10; // Número de rondas de hashing
+    const hashedContrasena = await bcrypt.hash(contrasena, saltRounds);
 
     try {
-        // Insertar el nuevo usuario con el nombre de usuario, contraseña y salt
+        // Insertar el nuevo usuario con el nombre de usuario y contraseña cifrada
         const result = await pool.query(
             'INSERT INTO usuarios(usuario, contrasena) VALUES (?, ?)',
             [usuario, hashedContrasena]
         );
 
-        res.json({ success: true, message: 'Usuario creado exitosamente' });
+        res.json(result); // Envío de la respuesta al cliente
 
     } catch (error) { // Manejo de errores
         console.error('Error al crear el usuario:', error);
-        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+        res.status(500).send('Error interno del servidor');
     }
 });
 
@@ -87,7 +82,7 @@ app.get('/selectAllUsers', async (req, res) => {
 app.post('/login', async (req, res) => {
     // Se extraen los datos de la solicitud en las variables respectivamente
     const usuario = req.body.usuario;
-    const contrasena = req.body.pass; // Cambiado a 'pass'
+    const contrasena = req.body.contrasena;
 
     try {
         // Buscar el usuario por nombre de usuario
@@ -114,8 +109,7 @@ app.post('/login', async (req, res) => {
 
     } catch (error) {
         console.error('Error al realizar la solicitud:', error);
-
-        res.status(500).json({ authenticated: false, message: 'Error interno del servidor' });
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
