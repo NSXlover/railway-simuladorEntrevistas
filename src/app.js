@@ -92,6 +92,11 @@ app.post('/login', async (req, res) => {
             // Si se encuentra el usuario, comparar contraseñas
             const hashedContrasenaDB = result[0].contrasena;
 
+            if (!contrasena || !hashedContrasenaDB) {
+                res.status(400).json({ authenticated: false, message: 'Credenciales incompletas' });
+                return;
+            }
+
             // Comparar la contraseña proporcionada con la almacenada en la base de datos
             const contrasenaCorrecta = await bcrypt.compare(contrasena, hashedContrasenaDB);
 
@@ -112,7 +117,6 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
-
 
 //Consulta del ID más alto
 app.get('/getMaxUserId', async (req, res) => {
