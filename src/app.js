@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-    origin: 'https://nsxlover.github.io/pruebaFrontEnd.github.io/', // Permite solicitudes solo desde este origen
+    origin: 'https://nsxlover.github.io/pruebaFrontEnd.github.io', // Permite solicitudes solo desde este origen
     methods: ['GET', 'POST'], // Métodos HTTP permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
     credentials: true, // Permite el envío de cookies
@@ -39,17 +39,14 @@ app.get('/ping', async (req, res) => {
 });
 
 
-//Sentencia de creación de usuarios con contraseñas cifradas
-app.post('/createUser', async (req, res) => { //Ruta y método HTTP
-
-    //Se extraen los datos de la solicitud en las variables respectivamente
+// Sentencia de creación de usuarios con contraseñas cifradas
+app.post('/createUser', async (req, res) => {
+    // Se extraen los datos de la solicitud en las variables respectivamente
     const usuario = req.body.usuario;
-    const contrasena = req.body.contrasena;
-
-    console.log(usuario + " || " + contrasena);
+    const contrasena = req.body.pass; // Cambiado a 'pass'
 
     // Generar un salt aleatorio
-    const salt = crypto.randomBytes(16).toString('hex'); //Esto sirve para añadirle una cadena aleatoria antes de aplicar el hash y así mejorar la seguridad
+    const salt = crypto.randomBytes(16).toString('hex');
 
     // Aplicar hash a la contraseña junto con el salt aplicando el sha256
     const hashedContrasena = crypto
@@ -64,11 +61,11 @@ app.post('/createUser', async (req, res) => { //Ruta y método HTTP
             [usuario, hashedContrasena]
         );
 
-        res.json(result); //Envío de la respuesta al cliente
+        res.json({ success: true, message: 'Usuario creado exitosamente' });
 
-    } catch (error) { //Manejo de errores
+    } catch (error) { // Manejo de errores
         console.error('Error al crear el usuario:', error);
-        res.status(500).send('Error interno del servidor');
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 });
 
@@ -86,17 +83,15 @@ app.get('/selectAllUsers', async (req, res) => {
 });
 
 
-//Login
+// Login
 app.post('/login', async (req, res) => {
-    //Se extraen los datos de la solicitud en las variables respectivamente
+    // Se extraen los datos de la solicitud en las variables respectivamente
     const usuario = req.body.usuario;
-    const contrasena = req.body.contrasena;
+    const contrasena = req.body.pass; // Cambiado a 'pass'
 
     try {
         // Buscar el usuario por nombre de usuario
         const [result] = await pool.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
-
-        console.log(result);
 
         if (result.length > 0) {
             // Si se encuentra el usuario, comparar contraseñas
@@ -107,29 +102,20 @@ app.post('/login', async (req, res) => {
 
             if (contrasenaCorrecta) {
                 // Contraseña correcta, usuario autenticado
-                alert('Inicio de sesión exitoso');
                 res.json({ authenticated: true, message: 'Inicio de sesión exitoso' });
             } else {
                 // Contraseña incorrecta
-                alert('Contraseña incorrecta');
                 res.json({ authenticated: false, message: 'Contraseña incorrecta' });
             }
         } else {
             // Usuario no encontrado
-            alert('Usuario no encontrado');
             res.json({ authenticated: false, message: 'Usuario no encontrado' });
         }
 
     } catch (error) {
         console.error('Error al realizar la solicitud:', error);
-        alert('Error al realizar la solicitud: ' + error.message);
 
-        if (error.code === 'ER_ACCESS_DENIED_ERROR') {
-            // Error de acceso a la base de datos, verifica las credenciales de la base de datos
-            res.status(500).json({ error: 'Error de acceso a la base de datos' });
-        } else {
-            res.status(500).json({ error: 'Error interno del servidor' });
-        }
+        res.status(500).json({ authenticated: false, message: 'Error interno del servidor' });
     }
 });
 
