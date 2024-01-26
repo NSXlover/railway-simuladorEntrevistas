@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-    origin: 'https://nsxlover.github.io/pruebaFrontEnd.github.io/', // Permite solicitudes solo desde este origen
+    origin: '*', // Permite solicitudes solo desde este origen
     methods: ['GET', 'POST'], // Métodos HTTP permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
     credentials: true, // Permite el envío de cookies
